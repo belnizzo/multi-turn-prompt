@@ -100,21 +100,20 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if ((bool)stepContext.Result)
-            {
-                // Get the current profile object from user state.
-                var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+        
+             // Get the current profile object from user state.
+             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
          
-                userProfile.Name = (string)stepContext.Values["name"];            
+            userProfile.Name = (string)stepContext.Values["name"];            
 
-                var msg = $"Your name as {userProfile.Name}";
-
-           
-             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks. Your profile will not be kept."), cancellationToken);
-            }
+            var msg = $"Your name is {userProfile.Name}";
+             
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);         
+         
 
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            
         }
     
     }
