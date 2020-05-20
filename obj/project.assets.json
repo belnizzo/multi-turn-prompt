@@ -6641,11 +6641,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
+      "projectUniqueName": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
       "projectName": "MultiTurnPromptBot",
-      "projectPath": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
+      "projectPath": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
       "packagesPath": "C:\\Users\\Tech Jargon\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\obj\\",
+      "outputPath": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Tech Jargon\\AppData\\Roaming\\NuGet\\NuGet.Config",
