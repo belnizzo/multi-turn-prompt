@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
+        "projectName": "MultiTurnPromptBot",
+        "projectPath": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
+        "packagesPath": "C:\\Users\\Tech Jargon\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Tech Jargon\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "Microsoft.Bot.Builder.Dialogs": {
+              "target": "Package",
+              "version": "[4.9.0, )"
+            },
+            "Microsoft.Bot.Builder.Integration.AspNet.Core": {
+              "target": "Package",
+              "version": "[4.9.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
