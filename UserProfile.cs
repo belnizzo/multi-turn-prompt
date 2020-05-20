@@ -10,12 +10,15 @@ namespace Microsoft.BotBuilderSamples
     /// </summary>
     public class UserProfile
     {
-        public string PizzaType { get; set; }
+        public string Language { get; set; }
 
         public string Name { get; set; }
 
-        public int Age { get; set; }
+        public string County { get; set; }
 
-        public Attachment Picture { get; set; }
+        public string Subcounty { get; set; }
+       
+
+        public string Ward { get; set; }
     }
 }
