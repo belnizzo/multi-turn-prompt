@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LHSgIRaIg56Gl9uTTDB/TXIEXvnJFtwuBy4ePdhyTxu2XW7EnnAWFEd2nInce2/3fljMdLJr3HMhwnSKG6rcuw==",
+  "dgSpecHash": "Ymv8Nvr97AnSVCYk0WO5hIYorASKxoyRhqN0B/zp8112I0jrerxjsu11urJOa6AcZRxa11FuboovtfJbwYLgWg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Tech Jargon\\Desktop\\botbuilder-samples\\samples\\csharp_dotnetcore\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
+  "projectFilePath": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Tech Jargon\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.1\\microsoft.aspnetcore.jsonpatch.3.1.1.nupkg.sha512",
     "C:\\Users\\Tech Jargon\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.1\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.1.nupkg.sha512",
