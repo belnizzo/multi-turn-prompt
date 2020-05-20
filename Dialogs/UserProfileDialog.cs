@@ -83,7 +83,6 @@ namespace Microsoft.BotBuilderSamples
                    Prompt = MessageFactory.Text("Which sub - county do you live in?"),
                    Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu", "Trans-Nzoia" }),
                }, cancellationToken);
-
         }
 
         
@@ -101,24 +100,20 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if ((bool)stepContext.Result)
-            {
-                // Get the current profile object from user state.
-                var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+        
+             // Get the current profile object from user state.
+             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+         
+            userProfile.Name = (string)stepContext.Values["name"];            
 
-                userProfile.Language = (string)stepContext.Values["language"];
-                userProfile.Name = (string)stepContext.Values["name"];
-                userProfile.County = (string)stepContext.Values["county"];
-                userProfile.Subcounty = (string)stepContext.Values["subcounty"];
-
-                var msg = $"I have your preferred pizza flavour is {userProfile.Language} and your name as {userProfile.Name}";
-
-           
-             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks. Your profile will not be kept."), cancellationToken);
-            }
+            var msg = $"Your name is {userProfile.Name}";
+             
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);         
+         
 
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            
         }
     
     }
