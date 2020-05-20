@@ -83,7 +83,6 @@ namespace Microsoft.BotBuilderSamples
                    Prompt = MessageFactory.Text("Which sub - county do you live in?"),
                    Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu", "Trans-Nzoia" }),
                }, cancellationToken);
-
         }
 
         
@@ -105,13 +104,10 @@ namespace Microsoft.BotBuilderSamples
             {
                 // Get the current profile object from user state.
                 var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+         
+                userProfile.Name = (string)stepContext.Values["name"];            
 
-                userProfile.Language = (string)stepContext.Values["language"];
-                userProfile.Name = (string)stepContext.Values["name"];
-                userProfile.County = (string)stepContext.Values["county"];
-                userProfile.Subcounty = (string)stepContext.Values["subcounty"];
-
-                var msg = $"I have your preferred pizza flavour is {userProfile.Language} and your name as {userProfile.Name}";
+                var msg = $"Your name as {userProfile.Name}";
 
            
              await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thanks. Your profile will not be kept."), cancellationToken);
