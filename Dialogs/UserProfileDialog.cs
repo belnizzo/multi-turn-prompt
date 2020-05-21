@@ -27,6 +27,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 LanguageStepAsync,
                 NameStepAsync,
+                NameConfirmStepAsync,
                 CountyStepAsync,
                 SubcountyStepAsync,
                 WardStepAsync,              
@@ -59,10 +60,22 @@ namespace Microsoft.BotBuilderSamples
 
         private static async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["name"] = ((FoundChoice)stepContext.Result).Value;
+
+            stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
 
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
         }
+        private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["name"] = (string)stepContext.Result;
+
+            // We can send messages to the user at any point in the WaterfallStep.
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
+
+            // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
+            return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("OWould you like to give more details?") }, cancellationToken);
+        }
+
 
         private async Task<DialogTurnResult> CountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -81,7 +94,58 @@ namespace Microsoft.BotBuilderSamples
                new PromptOptions
                {
                    Prompt = MessageFactory.Text("Which sub - county do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu", "Trans-Nzoia" }),
+                   Choices = ChoiceFactory.ToChoices(new List<string> { "Kilifi", "Kilifi)",
+"Kwale District ","Lamu District","Mombasa","Wundanyi","Hola","Garissa", "mandera","Wanjir"," Embu"
+
+
+
+//Embu District (Embu)
+//Isiolo District (Isiolo)
+//Kitui District (Kitui)
+//Machakos District (Machakos)
+//Makueni District (Makueni)
+//Marsabit District (Marsabit)
+//Meru District (Meru)
+//Mutomo District (Mutomo)
+//Tharaka-Nithi District (Chuka)
+//Central Province:
+
+//Kiambu District (Kiambu)
+//Kirinyaga District (Kerugoya/Kutus)
+//Murang'a District (Murang'a)
+//Nyandarua District(Nyahururu)
+//Nyeri District(Nyeri)
+//Rift Valley Province:
+
+//Baringo District(Kabarnet)
+//Bomet District(Bomet)
+//Elgeyo - Marakwet District
+//Kajiado District(Kajiado)
+//Kericho District(Kericho)
+//Laikipia District(Nanyuki)
+//Nakuru District(Nakuru)
+//Nandi District(Kapsabet)
+//Narok District(Narok)
+//Samburu District(Maralal)
+//Trans Nzoia District(Kitale)
+//Turkana District(Lodwar)
+//Uasin Gishu District(Eldoret)
+//West Pokot District(Kapenguria)
+//Western Province:
+
+//Bungoma District(Bungoma)
+//Busia(Busia)
+//Kakamega District(Kakamega)
+//Vihiga District(Vihiga)
+//Nyanza Province:
+
+//Homa Bay District(Homa Bay)
+//Kisii Central(Kisii)
+//Kisumu District(Kisumu)
+//Migori District(Migori)
+//Nyamira District(Nyamira)
+//Siaya District(Siaya)
+               }),
                }, cancellationToken);
         }
 
@@ -104,7 +168,7 @@ namespace Microsoft.BotBuilderSamples
              // Get the current profile object from user state.
              var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
          
-            userProfile.Name = (string)stepContext.Values["name"];            
+            userProfile.Name = (string)stepContext.Values["name"];
 
             var msg = $"Your name is {userProfile.Name}";
              
