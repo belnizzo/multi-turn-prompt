@@ -53,7 +53,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Hello,Welcome to our service.Please choose your preferred Langauage"),
+                    Prompt = MessageFactory.Text("Hello, Welcome to our service.Please choose your preferred Langauage"),
                     Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kisawahili"}),
                 }, cancellationToken);
         }
@@ -73,7 +73,7 @@ namespace Microsoft.BotBuilderSamples
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
 
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-            return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("OWould you like to give more details?") }, cancellationToken);
+            return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more details?") }, cancellationToken);
         }
 
 
@@ -90,6 +90,7 @@ namespace Microsoft.BotBuilderSamples
         }
         private async Task<DialogTurnResult> SubcountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            stepContext.Values["county"] = ((FoundChoice)stepContext.Result).Value;
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions
                {
@@ -152,6 +153,7 @@ namespace Microsoft.BotBuilderSamples
         
         private async Task<DialogTurnResult> WardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            stepContext.Values["subcounty"] = ((FoundChoice)stepContext.Result).Value;
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions
                {
@@ -164,13 +166,18 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-        
-             // Get the current profile object from user state.
-             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+            stepContext.Values["ward"] = ((FoundChoice)stepContext.Result).Value;
+
+            // Get the current profile object from user state.
+            var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
          
             userProfile.Name = (string)stepContext.Values["name"];
+            userProfile.Language = (string)stepContext.Values["language"];
+            userProfile.County = (string)stepContext.Values["county"];
+            userProfile.Subcounty = (string)stepContext.Values["subcounty"];
+            userProfile.Ward = (string)stepContext.Values["ward"];
 
-            var msg = $"Your name is {userProfile.Name}";
+            var msg = $"Thank you {userProfile.Name } please have a look at the information provided.  Language Selection: {userProfile.Language}      Your county: {userProfile.County}    Your Subcounty: {userProfile.Subcounty}     Your Ward: {userProfile.Ward}. ";
              
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);         
          
