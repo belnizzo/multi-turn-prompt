@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -10,12 +11,24 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text.NumberWithUnit;
 
 namespace Microsoft.BotBuilderSamples
 {
+    public static class Constants
+    {
+        public static List<string> Counties = new List<string>()
+        {
+            "Embu","Mombasa","Kwale Coast"," Kilifi Coast","Tana River","Lamu Coast","Taita Taveta","Garissa North Eastern","Wajir North Eastern","Mandera North Eastern","Marsabit Eastern","Isiolo Eastern","Meru Eastern","Tharaka Nithi Eastern ","Embu Eastern", "Kitui Eastern", "Machakos Eastern","Makueni Eastern","Nyandarua Central", "Nyeri Central", "Kirinyaga Central"," Murang'a Central","Kiambu Central"," Turkana Rift Valley","West Pokot Rift Valley",
+            "Samburu Rift Valley","Uasin Gishu Rift Valley","Trans-Nzoia Rift Valley","Elgeyo-Marakwet Rift Valley","Nandi Rift Valley","Baringo Rift Valley","Laikipia Rift Valley","Nakuru Rift Valley"," Narok Rift Valley","Kajiado Rift Valley","Kericho Rift Valley","Bomet Rift Valley","Kakamega Western","Vihiga Western","Bungoma Western",
+            "Busia Western","Siaya Nyanza","Kisumu Nyanza","Homa Bay Nyanza","Migori Nyanza","Kisii Nyanza",
+            "Nyamira Nyanza","Nairobi"
+        };
+    }
+     
     public class UserProfileDialog : ComponentDialog
     {
-        private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;
+        private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;      
 
         public UserProfileDialog(UserState userState)
             : base(nameof(UserProfileDialog))
@@ -38,7 +51,6 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
          
 
@@ -54,7 +66,7 @@ namespace Microsoft.BotBuilderSamples
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Hello, Welcome to our service.Please choose your preferred Langauage"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kisawahili"}),
+                    Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kiswahili"}),
                 }, cancellationToken);
         }
 
@@ -84,10 +96,11 @@ namespace Microsoft.BotBuilderSamples
                new PromptOptions
                {
                    Prompt = MessageFactory.Text("Which county do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu" ,"Trans-Nzoia"}),
+                   Choices = ChoiceFactory.ToChoices(Constants.Counties),
                }, cancellationToken);
 
         }
+  
         private async Task<DialogTurnResult> SubcountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["county"] = ((FoundChoice)stepContext.Result).Value;
@@ -97,55 +110,6 @@ namespace Microsoft.BotBuilderSamples
                    Prompt = MessageFactory.Text("Which sub - county do you live in?"),
                    Choices = ChoiceFactory.ToChoices(new List<string> { "Kilifi", "Kilifi)",
 "Kwale District ","Lamu District","Mombasa","Wundanyi","Hola","Garissa", "mandera","Wanjir"," Embu"
-
-
-
-//Embu District (Embu)
-//Isiolo District (Isiolo)
-//Kitui District (Kitui)
-//Machakos District (Machakos)
-//Makueni District (Makueni)
-//Marsabit District (Marsabit)
-//Meru District (Meru)
-//Mutomo District (Mutomo)
-//Tharaka-Nithi District (Chuka)
-//Central Province:
-
-//Kiambu District (Kiambu)
-//Kirinyaga District (Kerugoya/Kutus)
-//Murang'a District (Murang'a)
-//Nyandarua District(Nyahururu)
-//Nyeri District(Nyeri)
-//Rift Valley Province:
-
-//Baringo District(Kabarnet)
-//Bomet District(Bomet)
-//Elgeyo - Marakwet District
-//Kajiado District(Kajiado)
-//Kericho District(Kericho)
-//Laikipia District(Nanyuki)
-//Nakuru District(Nakuru)
-//Nandi District(Kapsabet)
-//Narok District(Narok)
-//Samburu District(Maralal)
-//Trans Nzoia District(Kitale)
-//Turkana District(Lodwar)
-//Uasin Gishu District(Eldoret)
-//West Pokot District(Kapenguria)
-//Western Province:
-
-//Bungoma District(Bungoma)
-//Busia(Busia)
-//Kakamega District(Kakamega)
-//Vihiga District(Vihiga)
-//Nyanza Province:
-
-//Homa Bay District(Homa Bay)
-//Kisii Central(Kisii)
-//Kisumu District(Kisumu)
-//Migori District(Migori)
-//Nyamira District(Nyamira)
-//Siaya District(Siaya)
                }),
                }, cancellationToken);
         }
