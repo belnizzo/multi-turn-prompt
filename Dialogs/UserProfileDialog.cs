@@ -24,6 +24,17 @@ namespace Microsoft.BotBuilderSamples
             "Busia Western","Siaya Nyanza","Kisumu Nyanza","Homa Bay Nyanza","Migori Nyanza","Kisii Nyanza",
             "Nyamira Nyanza","Nairobi"
         };
+
+        public static List<string> SubCounties = new List<string>()
+        { "Kilifi","Kwale","Lamu","Mombasa","Taita-Taveta","Garissa","Mandera","Embu","Isiolo","Tharaka-Nikthi","Makueni","Kitui","Mutomo",
+            "Meru","Kiringyaga","Muranga","Nyandarua","Nyeri","Karbanet","Narok","Laikipia","Kericho","Lodwar","Nandi","Nakuru","Samburu","Kitale",
+            "Marala","Kakamega","Kisii"
+        };
+
+        public static List<string> Ward = new List<string>()
+        {
+            "Westlands","Kasarani","Dagoretti","Starehe","Langata","Embakasi","Kamukunji","Njiru","Makadara",
+        };
     }
      
     public class UserProfileDialog : ComponentDialog
@@ -89,6 +100,7 @@ namespace Microsoft.BotBuilderSamples
         }
 
 
+
         private async Task<DialogTurnResult> CountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
           
@@ -107,10 +119,8 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions
                {
-                   Prompt = MessageFactory.Text("Which sub - county do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Kilifi", "Kilifi)",
-"Kwale District ","Lamu District","Mombasa","Wundanyi","Hola","Garissa", "mandera","Wanjir"," Embu"
-               }),
+                   Prompt = MessageFactory.Text("Which sub-county do you live in?"),
+                   Choices = ChoiceFactory.ToChoices(Constants.SubCounties),           
                }, cancellationToken);
         }
 
@@ -122,9 +132,8 @@ namespace Microsoft.BotBuilderSamples
                new PromptOptions
                {
                    Prompt = MessageFactory.Text("Which ward do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu", "Trans-Nzoia" }),
+                   Choices = ChoiceFactory.ToChoices(Constants.Ward),
                }, cancellationToken);
-
         }
 
 
@@ -150,6 +159,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
             
         }
-    
+
+
     }
 }
