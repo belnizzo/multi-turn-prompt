@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -13,10 +15,32 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.NumberWithUnit;
 
+using Newtonsoft.Json;
+
 namespace Microsoft.BotBuilderSamples
 {
+    public class County
+    {
+        public County()
+        {
+        }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string Capital { get; set; }
+
+
+        [JsonProperty("sub_counties")]
+        public string[] SubCounties { get; set; }
+    }
+    [Newtonsoft.Json.JsonArrayAttribute("sub_counties")]
+    public class SubCounty
+    {
+        public string Name { get; set; }
+    }
     public static class Constants
     {
+        private static List<County> _testCounties = JsonConvert.DeserializeObject<List<County>>(File.ReadAllText("countiessubcounties.json"));
+        public static List<County> TestCounties = _testCounties;
         public static List<string> Counties = new List<string>()
         {
             "Embu","Mombasa","Kwale Coast"," Kilifi Coast","Tana River","Lamu Coast","Taita Taveta","Garissa North Eastern","Wajir North Eastern","Mandera North Eastern","Marsabit Eastern","Isiolo Eastern","Meru Eastern","Tharaka Nithi Eastern ","Embu Eastern", "Kitui Eastern", "Machakos Eastern","Makueni Eastern","Nyandarua Central", "Nyeri Central", "Kirinyaga Central"," Murang'a Central","Kiambu Central"," Turkana Rift Valley","West Pokot Rift Valley",
@@ -36,10 +60,10 @@ namespace Microsoft.BotBuilderSamples
             "Westlands","Kasarani","Dagoretti","Starehe","Langata","Embakasi","Kamukunji","Njiru","Makadara",
         };
     }
-     
+
     public class UserProfileDialog : ComponentDialog
     {
-        private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;      
+        private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;
 
         public UserProfileDialog(UserState userState)
             : base(nameof(UserProfileDialog))
@@ -54,7 +78,7 @@ namespace Microsoft.BotBuilderSamples
                 NameConfirmStepAsync,
                 CountyStepAsync,
                 SubcountyStepAsync,
-                WardStepAsync,              
+                WardStepAsync,
                 SummaryStepAsync,
             };
 
@@ -63,7 +87,7 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
-         
+
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
@@ -78,8 +102,8 @@ namespace Microsoft.BotBuilderSamples
                 {
                     Prompt = MessageFactory.Text("Hujambo, karibu katika huduma yetu.Tafadhali chagua lugha inayokufaa(1.Kiswahili),(2.Kingereza)." +
                     "  Hello, Welcome to our service.Please choose your preferred langauge(1.Kiswahili), (2.English)"),
-                 
-                    Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kiswahili"}),
+
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "English", "Kiswahili" }),
                 }, cancellationToken);
         }
 
@@ -87,7 +111,7 @@ namespace Microsoft.BotBuilderSamples
         {
 
             stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
-            if(stepContext.Values["language"] == "Kiswahili")
+            if (stepContext.Values["language"] == "Kiswahili")
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Tafadhali weka jina Lako") }, cancellationToken);
             }
@@ -95,7 +119,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
             }
-               
+
         }
         private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -123,24 +147,24 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> CountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if(stepContext.Values["language"] == "Kiswahili")
+            if (stepContext.Values["language"] == "Kiswahili")
             {
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                Prompt = MessageFactory.Text("Weka Counti unaoishi"),
-                Choices = ChoiceFactory.ToChoices(Constants.Counties),
-            }, cancellationToken);
+                    Prompt = MessageFactory.Text("Weka Counti unaoishi"),
+                    Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                }, cancellationToken);
 
             }
             else
             {
-              return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                new PromptOptions
-                {
-                Prompt = MessageFactory.Text("Which county do you live in?"),
-                Choices = ChoiceFactory.ToChoices(Constants.Counties),
-                }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                  new PromptOptions
+                  {
+                      Prompt = MessageFactory.Text("Which county do you live in?"),
+                      Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                  }, cancellationToken);
 
             }
         }
@@ -153,8 +177,8 @@ namespace Microsoft.BotBuilderSamples
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                 Prompt = MessageFactory.Text("Unaishi SabKaunti gani?"),
-                 Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
+                    Prompt = MessageFactory.Text("Unaishi SabKaunti gani?"),
+                    Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
                 }, cancellationToken);
             }
             else
@@ -166,30 +190,30 @@ namespace Microsoft.BotBuilderSamples
                    Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
                }, cancellationToken);
             }
-             
+
         }
         private async Task<DialogTurnResult> WardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["subcounty"] = ((FoundChoice)stepContext.Result).Value;
             if (stepContext.Values["language"] == "Kiswahili")
             {
-               return await stepContext.PromptAsync(nameof(ChoicePrompt),
-               new PromptOptions
-               {
-                   Prompt = MessageFactory.Text("Unashi wardi gani?"),
-                   Choices = ChoiceFactory.ToChoices(Constants.Ward),
-               }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Unashi wardi gani?"),
+                    Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                }, cancellationToken);
             }
             else
             {
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                 Prompt = MessageFactory.Text("Which ward do you live in?"),
-                 Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                    Prompt = MessageFactory.Text("Which ward do you live in?"),
+                    Choices = ChoiceFactory.ToChoices(Constants.Ward),
                 }, cancellationToken);
             }
-        
+
         }
 
 
@@ -199,7 +223,7 @@ namespace Microsoft.BotBuilderSamples
 
             // Get the current profile object from user state.
             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
-         
+
             userProfile.Name = (string)stepContext.Values["name"];
             userProfile.Language = (string)stepContext.Values["language"];
             userProfile.County = (string)stepContext.Values["county"];
