@@ -2,17 +2,43 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text.NumberWithUnit;
 
 namespace Microsoft.BotBuilderSamples
 {
+    public static class Constants
+    {
+        public static List<string> Counties = new List<string>()
+        { 
+            "Embu","Mombasa","Kwale Coast"," Kilifi Coast","Tana River","Lamu Coast","Taita Taveta","Garissa North Eastern","Wajir North Eastern",
+             "Mandera North Eastern","Marsabit Eastern"
+        };
+
+        public static List<string> SubCounties = new List<string>()
+        { 
+            "Kilifi","Kwale","Lamu","Mombasa","Taita-Taveta","Garissa","Mandera","Embu","Isiolo","Tharaka-Nikthi","Makueni","Kitui","Mutomo",
+                "Meru","Kiringyaga","Muranga","Nyandarua","Nyeri","Karbanet","Narok","Laikipia","Kericho","Lodwar","Nandi","Nakuru",
+                    "Samburu","Kitale"
+
+        };
+
+        public static List<string> Ward = new List<string>()
+        {
+            "Westlands","Kasarani","Dagoretti","Starehe","Langata","Embakasi","Kamukunji","Njiru","Makadara"
+        };
+    }
+
     public class UserProfileDialog : ComponentDialog
     {
         private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;
@@ -27,6 +53,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 LanguageStepAsync,
                 NameStepAsync,
+                NameConfirmStepAsync,
                 CountyStepAsync,
                 SubcountyStepAsync,
                 WardStepAsync,              
@@ -37,13 +64,13 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
-         
+
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
+       
 
         private static async Task<DialogTurnResult> LanguageStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -52,69 +79,176 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Hello,Welcome to our service.Please choose your preferred Langauage"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kisawahili"}),
+                    Prompt = MessageFactory.Text("Hujambo, karibu katika huduma yetu.Tafadhali chagua lugha inayokufaa(1.Kiswahili),(2.Kingereza)." +
+                    "  Hello, Welcome to our service.Please choose your preferred langauge(1.Kiswahili), (2.English)"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kiswahili"}),
                 }, cancellationToken);
         }
 
         private static async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["name"] = ((FoundChoice)stepContext.Result).Value;
 
-            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
+            stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
+            if (stepContext.Values["language"] == "Kiswahili")
+            {
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Tafadhali, weka jina lako.") }, cancellationToken);
+            }
+            else
+            {
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
+            }
         }
+        private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["name"] = (string)stepContext.Result;
+            if (stepContext.Values["language"] == "Kiswahili")
+            {
+                // We can send messages to the user at any point in the WaterfallStep.
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Asante {stepContext.Result}."), cancellationToken);
+                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
+                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Utaendelea kupeana ujumbe?") }, cancellationToken);
+            }
+            else
+            {
+
+                // We can send messages to the user at any point in the WaterfallStep.
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
+                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
+                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more information?") }, cancellationToken);
+            }
+
+            
+        }
+
 
         private async Task<DialogTurnResult> CountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-          
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
-               new PromptOptions
-               {
-                   Prompt = MessageFactory.Text("Which county do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu" ,"Trans-Nzoia"}),
-               }, cancellationToken);
+         
+            if (stepContext.Values["language"] == "Kiswahili")
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
 
+                   new PromptOptions
+                   {
+                       Prompt = MessageFactory.Text("Unaishi kaunti gani?"),
+                       Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                   }, cancellationToken);
+
+
+            }
+            else 
+            { 
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                       Prompt = MessageFactory.Text("Which county do you live in?"),
+                       Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                }, cancellationToken);
+
+            }
         }
         private async Task<DialogTurnResult> SubcountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
+            if (stepContext.Values["language"] == "Kiswahili")
+
+            {
+               return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions
                {
-                   Prompt = MessageFactory.Text("Which sub - county do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu", "Trans-Nzoia" }),
+                   Prompt = MessageFactory.Text("Unaishi subkaunti gani?"),
+                   Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
                }, cancellationToken);
+
+
+            }
+            else
+            {
+
+              return await stepContext.PromptAsync(nameof(ChoicePrompt),
+              new PromptOptions
+              {
+                  Prompt = MessageFactory.Text("Which sub - county do you live in?"),
+                  Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
+
+
+              }, cancellationToken);
+            }
+
+               
         }
 
         
         private async Task<DialogTurnResult> WardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            stepContext.Values["subcounty"] = ((FoundChoice)stepContext.Result).Value;
+            if (stepContext.Values["language"] == "Kiswahili")
+
+            {
+               return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions
+
                {
-                   Prompt = MessageFactory.Text("Which ward do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(new List<string> { "Nairobi", "Kisumu", "Trans-Nzoia" }),
+                   Prompt = MessageFactory.Text("Unaishi Wodi gani?"),
+                   Choices = ChoiceFactory.ToChoices(Constants.Ward),
                }, cancellationToken);
 
-        }
 
+            }
+            else
+            {
+
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                   new PromptOptions
+                   {
+                       Prompt = MessageFactory.Text("Which ward do you live in?"),
+                       Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                   }, cancellationToken);
+            }
+               
+
+        }
 
         private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-        
-             // Get the current profile object from user state.
-             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
-         
-            userProfile.Name = (string)stepContext.Values["name"];            
+            stepContext.Values["ward"] = ((FoundChoice)stepContext.Result).Value;
 
-            var msg = $"Your name is {userProfile.Name}";
-             
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);         
-         
+            // Get the current profile object from user state.
+            var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
-            
+            userProfile.Language = (string)stepContext.Values["language"];
+            userProfile.Name = (string)stepContext.Values["name"];
+            userProfile.County = (string)stepContext.Values["county"];
+            userProfile.Subcounty = (string)stepContext.Values["subcounty"];
+            userProfile.Ward = (string)stepContext.Values["ward"];
+
+            if (stepContext.Values["language"] == "Kiswahili")
+
+            {
+                var msg = $"Hongera!! {userProfile.Name }. Sasa ujumbe wako umekalimika. Chagua  (1.MAIN MENU)  kuendelea.";
+
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
+
+
+                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+
+
+            }
+            else
+            {
+                var msg = $"Conguratulations {userProfile.Name }. You are now registered to our services.Please choose (1.MAIN MENU) to continue with our service";
+
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
+
+
+                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+
+            }
+
+
         }
-    
+
     }
 }
