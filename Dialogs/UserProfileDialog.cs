@@ -15,27 +15,49 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.NumberWithUnit;
 
+using Newtonsoft.Json;
+
 namespace Microsoft.BotBuilderSamples
 {
+    public class County
+    {
+        public County()
+        {
+        }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string Capital { get; set; }
+
+
+        [JsonProperty("sub_counties")]
+        public string[] SubCounties { get; set; }
+    }
+    [Newtonsoft.Json.JsonArrayAttribute("sub_counties")]
+    public class SubCounty
+    {
+        public string Name { get; set; }
+    }
     public static class Constants
     {
+        private static List<County> _testCounties = JsonConvert.DeserializeObject<List<County>>(File.ReadAllText("countiessubcounties.json"));
+        public static List<County> TestCounties = _testCounties;
         public static List<string> Counties = new List<string>()
-        { 
-            "Embu","Mombasa","Kwale Coast"," Kilifi Coast","Tana River","Lamu Coast","Taita Taveta","Garissa North Eastern","Wajir North Eastern",
-             "Mandera North Eastern","Marsabit Eastern"
+        {
+            "Embu","Mombasa","Kwale Coast"," Kilifi Coast","Tana River","Lamu Coast","Taita Taveta","Garissa North Eastern","Wajir North Eastern","Mandera North Eastern","Marsabit Eastern","Isiolo Eastern","Meru Eastern","Tharaka Nithi Eastern ","Embu Eastern", "Kitui Eastern", "Machakos Eastern","Makueni Eastern","Nyandarua Central", "Nyeri Central", "Kirinyaga Central"," Murang'a Central","Kiambu Central"," Turkana Rift Valley","West Pokot Rift Valley",
+            "Samburu Rift Valley","Uasin Gishu Rift Valley","Trans-Nzoia Rift Valley","Elgeyo-Marakwet Rift Valley","Nandi Rift Valley","Baringo Rift Valley","Laikipia Rift Valley","Nakuru Rift Valley"," Narok Rift Valley","Kajiado Rift Valley","Kericho Rift Valley","Bomet Rift Valley","Kakamega Western","Vihiga Western","Bungoma Western",
+            "Busia Western","Siaya Nyanza","Kisumu Nyanza","Homa Bay Nyanza","Migori Nyanza","Kisii Nyanza",
+            "Nyamira Nyanza","Nairobi"
         };
 
         public static List<string> SubCounties = new List<string>()
-        { 
-            "Kilifi","Kwale","Lamu","Mombasa","Taita-Taveta","Garissa","Mandera","Embu","Isiolo","Tharaka-Nikthi","Makueni","Kitui","Mutomo",
-                "Meru","Kiringyaga","Muranga","Nyandarua","Nyeri","Karbanet","Narok","Laikipia","Kericho","Lodwar","Nandi","Nakuru",
-                    "Samburu","Kitale"
-
+        { "Kilifi","Kwale","Lamu","Mombasa","Taita-Taveta","Garissa","Mandera","Embu","Isiolo","Tharaka-Nikthi","Makueni","Kitui","Mutomo",
+            "Meru","Kiringyaga","Muranga","Nyandarua","Nyeri","Karbanet","Narok","Laikipia","Kericho","Lodwar","Nandi","Nakuru","Samburu","Kitale",
+            "Marala","Kakamega","Kisii"
         };
 
         public static List<string> Ward = new List<string>()
         {
-            "Westlands","Kasarani","Dagoretti","Starehe","Langata","Embakasi","Kamukunji","Njiru","Makadara"
+            "Westlands","Kasarani","Dagoretti","Starehe","Langata","Embakasi","Kamukunji","Njiru","Makadara",
         };
     }
 
@@ -56,7 +78,7 @@ namespace Microsoft.BotBuilderSamples
                 NameConfirmStepAsync,
                 CountyStepAsync,
                 SubcountyStepAsync,
-                WardStepAsync,              
+                WardStepAsync,
                 SummaryStepAsync,
             };
 
@@ -70,7 +92,6 @@ namespace Microsoft.BotBuilderSamples
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
-       
 
         private static async Task<DialogTurnResult> LanguageStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -81,7 +102,8 @@ namespace Microsoft.BotBuilderSamples
                 {
                     Prompt = MessageFactory.Text("Hujambo, karibu katika huduma yetu.Tafadhali chagua lugha inayokufaa(1.Kiswahili),(2.Kingereza)." +
                     "  Hello, Welcome to our service.Please choose your preferred langauge(1.Kiswahili), (2.English)"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> {"English", "Kiswahili"}),
+
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "English", "Kiswahili" }),
                 }, cancellationToken);
         }
 
@@ -91,12 +113,13 @@ namespace Microsoft.BotBuilderSamples
             stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
             if (stepContext.Values["language"] == "Kiswahili")
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Tafadhali, weka jina lako.") }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Tafadhali weka jina Lako") }, cancellationToken);
             }
             else
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your name.") }, cancellationToken);
             }
+
         }
         private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -105,109 +128,94 @@ namespace Microsoft.BotBuilderSamples
             {
                 // We can send messages to the user at any point in the WaterfallStep.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Asante {stepContext.Result}."), cancellationToken);
+
                 // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Utaendelea kupeana ujumbe?") }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Ungependa kuongeza ujume?") }, cancellationToken);
             }
             else
             {
-
                 // We can send messages to the user at any point in the WaterfallStep.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
+
                 // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more information?") }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more details?") }, cancellationToken);
+
             }
 
-            
         }
 
 
         private async Task<DialogTurnResult> CountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-         
             if (stepContext.Values["language"] == "Kiswahili")
             {
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
-
-                   new PromptOptions
-                   {
-                       Prompt = MessageFactory.Text("Unaishi kaunti gani?"),
-                       Choices = ChoiceFactory.ToChoices(Constants.Counties),
-                   }, cancellationToken);
-
-
-            }
-            else 
-            { 
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                       Prompt = MessageFactory.Text("Which county do you live in?"),
-                       Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                    Prompt = MessageFactory.Text("Weka Counti unaoishi"),
+                    Choices = ChoiceFactory.ToChoices(Constants.Counties),
                 }, cancellationToken);
+
+            }
+            else
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                  new PromptOptions
+                  {
+                      Prompt = MessageFactory.Text("Which county do you live in?"),
+                      Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                  }, cancellationToken);
 
             }
         }
         private async Task<DialogTurnResult> SubcountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
+            stepContext.Values["county"] = ((FoundChoice)stepContext.Result).Value;
             if (stepContext.Values["language"] == "Kiswahili")
 
             {
-               return await stepContext.PromptAsync(nameof(ChoicePrompt),
-               new PromptOptions
-               {
-                   Prompt = MessageFactory.Text("Unaishi subkaunti gani?"),
-                   Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
-               }, cancellationToken);
-
-
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Unaishi SabKaunti gani?"),
+                    Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
+                }, cancellationToken);
             }
             else
             {
-
-              return await stepContext.PromptAsync(nameof(ChoicePrompt),
-              new PromptOptions
-              {
-                  Prompt = MessageFactory.Text("Which sub - county do you live in?"),
-                  Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
-
-
-              }, cancellationToken);
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+               new PromptOptions
+               {
+                   Prompt = MessageFactory.Text("Which sub-county do you live in?"),
+                   Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
+               }, cancellationToken);
             }
 
-               
         }
-
-        
         private async Task<DialogTurnResult> WardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["subcounty"] = ((FoundChoice)stepContext.Result).Value;
             if (stepContext.Values["language"] == "Kiswahili")
-
             {
-               return await stepContext.PromptAsync(nameof(ChoicePrompt),
-               new PromptOptions
-
-               {
-                   Prompt = MessageFactory.Text("Unaishi Wodi gani?"),
-                   Choices = ChoiceFactory.ToChoices(Constants.Ward),
-               }, cancellationToken);
-
-
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Unashi wardi gani?"),
+                    Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                }, cancellationToken);
             }
             else
             {
-
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                   new PromptOptions
-                   {
-                       Prompt = MessageFactory.Text("Which ward do you live in?"),
-                       Choices = ChoiceFactory.ToChoices(Constants.Ward),
-                   }, cancellationToken);
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Which ward do you live in?"),
+                    Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                }, cancellationToken);
             }
-               
 
         }
+
 
         private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -216,16 +224,15 @@ namespace Microsoft.BotBuilderSamples
             // Get the current profile object from user state.
             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            userProfile.Language = (string)stepContext.Values["language"];
             userProfile.Name = (string)stepContext.Values["name"];
+            userProfile.Language = (string)stepContext.Values["language"];
             userProfile.County = (string)stepContext.Values["county"];
             userProfile.Subcounty = (string)stepContext.Values["subcounty"];
             userProfile.Ward = (string)stepContext.Values["ward"];
 
             if (stepContext.Values["language"] == "Kiswahili")
-
             {
-                var msg = $"Hongera!! {userProfile.Name }. Sasa ujumbe wako umekalimika. Chagua  (1.MAIN MENU)  kuendelea.";
+                var msg = $"Hongera!! {userProfile.Name }. Sasa ujume wako umekalimika. Chagua  (1.MAIN MENU)  kuendelea.";
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
 
@@ -249,6 +256,7 @@ namespace Microsoft.BotBuilderSamples
 
 
         }
+
 
     }
 }
