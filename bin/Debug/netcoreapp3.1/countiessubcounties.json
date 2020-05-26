@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> d6ce0b1f45d5609734291b51ce88d7612b1045ff
 [
     {
         "name": "Baringo",
@@ -211,7 +214,11 @@
         "capital": "Kisii",
         "code": 45,
         "sub_counties": [
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> d6ce0b1f45d5609734291b51ce88d7612b1045ff
         ]
     },
     {
@@ -390,7 +397,11 @@
             "Kigumo",
             "Kiharu",
             "Mathioya",
+<<<<<<< HEAD
             "Murang’a south"
+=======
+            "Murangâ€™a south"
+>>>>>>> d6ce0b1f45d5609734291b51ce88d7612b1045ff
         ]
     },
     {

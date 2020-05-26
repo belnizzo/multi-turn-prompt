@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -15,9 +17,11 @@ using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.NumberWithUnit;
 using Newtonsoft.Json;
 
+using Newtonsoft.Json;
+
 namespace Microsoft.BotBuilderSamples
 {
-    //C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\countiessubcounties.json
+
     public class County
     {
         public static List<County> GetCounties()
