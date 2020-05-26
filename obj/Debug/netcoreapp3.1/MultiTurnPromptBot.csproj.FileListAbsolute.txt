@@ -100,3 +100,4 @@ C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\obj\Debug\netcoreapp3.1\static
 C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.dll
 C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.pdb
 C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.genruntimeconfig.cache
+C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\bin\Debug\netcoreapp3.1\countiessubcounties.json

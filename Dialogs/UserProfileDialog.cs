@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.IO;
 using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,13 +15,20 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.NumberWithUnit;
+using Newtonsoft.Json;
 
 using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples
 {
+
     public class County
     {
+        public static List<County> GetCounties()
+        {
+            var counties = JsonConvert.DeserializeObject<List<County>>(File.ReadAllText("countiessubcounties.json"));
+            return counties;
+        }
         public County()
         {
         }
@@ -37,39 +45,16 @@ namespace Microsoft.BotBuilderSamples
     {
         public string Name { get; set; }
     }
-    public static class Constants
-    {
-        private static List<County> _testCounties = JsonConvert.DeserializeObject<List<County>>(File.ReadAllText("countiessubcounties.json"));
-        public static List<County> TestCounties = _testCounties;
-        public static List<string> Counties = new List<string>()
-        {
-            "Embu","Mombasa","Kwale Coast"," Kilifi Coast","Tana River","Lamu Coast","Taita Taveta","Garissa North Eastern","Wajir North Eastern","Mandera North Eastern","Marsabit Eastern","Isiolo Eastern","Meru Eastern","Tharaka Nithi Eastern ","Embu Eastern", "Kitui Eastern", "Machakos Eastern","Makueni Eastern","Nyandarua Central", "Nyeri Central", "Kirinyaga Central"," Murang'a Central","Kiambu Central"," Turkana Rift Valley","West Pokot Rift Valley",
-            "Samburu Rift Valley","Uasin Gishu Rift Valley","Trans-Nzoia Rift Valley","Elgeyo-Marakwet Rift Valley","Nandi Rift Valley","Baringo Rift Valley","Laikipia Rift Valley","Nakuru Rift Valley"," Narok Rift Valley","Kajiado Rift Valley","Kericho Rift Valley","Bomet Rift Valley","Kakamega Western","Vihiga Western","Bungoma Western",
-            "Busia Western","Siaya Nyanza","Kisumu Nyanza","Homa Bay Nyanza","Migori Nyanza","Kisii Nyanza",
-            "Nyamira Nyanza","Nairobi"
-        };
-
-        public static List<string> SubCounties = new List<string>()
-        { "Kilifi","Kwale","Lamu","Mombasa","Taita-Taveta","Garissa","Mandera","Embu","Isiolo","Tharaka-Nikthi","Makueni","Kitui","Mutomo",
-            "Meru","Kiringyaga","Muranga","Nyandarua","Nyeri","Karbanet","Narok","Laikipia","Kericho","Lodwar","Nandi","Nakuru","Samburu","Kitale",
-            "Marala","Kakamega","Kisii"
-        };
-
-        public static List<string> Ward = new List<string>()
-        {
-            "Westlands","Kasarani","Dagoretti","Starehe","Langata","Embakasi","Kamukunji","Njiru","Makadara",
-        };
-    }
 
     public class UserProfileDialog : ComponentDialog
     {
         private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;
-
+        private readonly List<County> Counties;
         public UserProfileDialog(UserState userState)
             : base(nameof(UserProfileDialog))
         {
             _userProfileAccessor = userState.CreateProperty<UserProfile>("UserProfile");
-
+            Counties = County.GetCounties();
             // This array defines how the Waterfall will execute.
             var waterfallSteps = new WaterfallStep[]
             {
@@ -113,7 +98,13 @@ namespace Microsoft.BotBuilderSamples
             stepContext.Values["language"] = ((FoundChoice)stepContext.Result).Value;
             if (stepContext.Values["language"] == "Kiswahili")
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Tafadhali weka jina Lako") }, cancellationToken);
+
+                return await stepContext.PromptAsync(nameof(TextPrompt),
+                    new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text("Tafadhali weka jina Lako")
+                    },
+                        cancellationToken);
             }
             else
             {
@@ -128,17 +119,18 @@ namespace Microsoft.BotBuilderSamples
             {
                 // We can send messages to the user at any point in the WaterfallStep.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Asante {stepContext.Result}."), cancellationToken);
-
+                return await stepContext.NextAsync();
                 // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Ungependa kuongeza ujume?") }, cancellationToken);
+                //return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Ungependa kuongeza ujume?") }, cancellationToken);
             }
             else
             {
                 // We can send messages to the user at any point in the WaterfallStep.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
 
+                return await stepContext.NextAsync();
                 // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-                return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more details?") }, cancellationToken);
+               // return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more details?") }, cancellationToken);
 
             }
 
@@ -149,28 +141,32 @@ namespace Microsoft.BotBuilderSamples
         {
             if (stepContext.Values["language"] == "Kiswahili")
             {
-                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                return await stepContext.PromptAsync(nameof(TextPrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Weka Counti unaoishi"),
-                    Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                    Prompt = MessageFactory.Text("Weka Kaunti unaoishi"),
+                    RetryPrompt = MessageFactory.Text("Tafadhali weka Kaunti sahihi")
+
                 }, cancellationToken);
 
             }
             else
             {
-                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                return await stepContext.PromptAsync(nameof(TextPrompt),
                   new PromptOptions
                   {
                       Prompt = MessageFactory.Text("Which county do you live in?"),
-                      Choices = ChoiceFactory.ToChoices(Constants.Counties),
+                      RetryPrompt = MessageFactory.Text("Please enter a valid county name")
                   }, cancellationToken);
 
             }
         }
+
         private async Task<DialogTurnResult> SubcountyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values["county"] = ((FoundChoice)stepContext.Result).Value;
+            stepContext.Values["county"] = (string)stepContext.Result;
+
+            var currentCounty = Counties.FirstOrDefault(c => c.Name == stepContext.Values["county"].ToString());
             if (stepContext.Values["language"] == "Kiswahili")
 
             {
@@ -178,7 +174,7 @@ namespace Microsoft.BotBuilderSamples
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Unaishi SabKaunti gani?"),
-                    Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
+                    Choices = ChoiceFactory.ToChoices(currentCounty.SubCounties),
                 }, cancellationToken);
             }
             else
@@ -187,7 +183,7 @@ namespace Microsoft.BotBuilderSamples
                new PromptOptions
                {
                    Prompt = MessageFactory.Text("Which sub-county do you live in?"),
-                   Choices = ChoiceFactory.ToChoices(Constants.SubCounties),
+                   Choices = ChoiceFactory.ToChoices(currentCounty.SubCounties),
                }, cancellationToken);
             }
 
@@ -201,7 +197,7 @@ namespace Microsoft.BotBuilderSamples
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Unashi wardi gani?"),
-                    Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                    Choices = ChoiceFactory.ToChoices(new[] { "Sub 1", "ub" }),
                 }, cancellationToken);
             }
             else
@@ -210,7 +206,7 @@ namespace Microsoft.BotBuilderSamples
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Which ward do you live in?"),
-                    Choices = ChoiceFactory.ToChoices(Constants.Ward),
+                    Choices = ChoiceFactory.ToChoices(new[] { "Sub 1", "ub" }),
                 }, cancellationToken);
             }
 
@@ -224,6 +220,7 @@ namespace Microsoft.BotBuilderSamples
             // Get the current profile object from user state.
             var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
+            //Save all data in the user profile.
             userProfile.Name = (string)stepContext.Values["name"];
             userProfile.Language = (string)stepContext.Values["language"];
             userProfile.County = (string)stepContext.Values["county"];
@@ -253,10 +250,29 @@ namespace Microsoft.BotBuilderSamples
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
 
             }
-
-
         }
 
+        //Validators
+        //private Task<bool> CountyValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        //{
+        //    //promptContext has the user's input
+        //    var valid = false;
 
+        //    //If county == content in JSON FILE then accepts
+
+        //    //else retry prompt
+
+        //    if (promptContext.Recognized.Succeeded)
+        //    {
+        //        string county = promptContext.Recognized.Value;  //Get the value that the user entered.
+        //        if (county == County.Name)
+        //        {
+        //            valid = true;
+        //        }
+        //    }
+        //    return Task.FromResult(valid);
+        //}
     }
 }
+
+
