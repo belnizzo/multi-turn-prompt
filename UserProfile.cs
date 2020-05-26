@@ -16,8 +16,7 @@ namespace Microsoft.BotBuilderSamples
 
         public string County { get; set; }
 
-        public string Subcounty { get; set; }
-       
+        public string Subcounty { get; set; }      
 
         public string Ward { get; set; }
     }
