@@ -65,6 +65,8 @@ namespace Microsoft.BotBuilderSamples
                 SubcountyStepAsync,
                 WardStepAsync,
                 SummaryStepAsync,
+                MainMenuStepAsync,
+                SubMenuStepAsync,
             };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
@@ -120,17 +122,13 @@ namespace Microsoft.BotBuilderSamples
                 // We can send messages to the user at any point in the WaterfallStep.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Asante {stepContext.Result}."), cancellationToken);
                 return await stepContext.NextAsync();
-                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-                //return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Ungependa kuongeza ujume?") }, cancellationToken);
+              
             }
             else
             {
                 // We can send messages to the user at any point in the WaterfallStep.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks {stepContext.Result}."), cancellationToken);
-
                 return await stepContext.NextAsync();
-                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-               // return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give more details?") }, cancellationToken);
 
             }
 
@@ -229,49 +227,99 @@ namespace Microsoft.BotBuilderSamples
 
             if (stepContext.Values["language"] == "Kiswahili")
             {
-                var msg = $"Hongera!! {userProfile.Name }. Sasa ujume wako umekalimika. Chagua  (1.MAIN MENU)  kuendelea.";
+                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
+                // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                    new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text($"Hongera { userProfile.Name} sasa ujumbe wako umekamilika.Chagua 1)MAIN MENU 2)RUDI NYUMA"),
 
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
-
-
-                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+                        Choices = ChoiceFactory.ToChoices(new List<string> { "MAIN MENU", "RUDI NYUMA" }),
+                    }, cancellationToken);
 
 
             }
             else
             {
-                var msg = $"Conguratulations {userProfile.Name }. You are now registered to our services.Please choose (1.MAIN MENU) to continue with our service";
+                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
+                // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                    new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text($"CONGRATULATIONS!! {userProfile.Name }, You are now registered to our services. Please select 1)MAIN MENU 2)GO BACK to continue with our service"),
 
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
-
-
-                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+                        Choices = ChoiceFactory.ToChoices(new List<string> { "MAIN MENU", "GO BACK" }),
+                    }, cancellationToken);
 
             }
+
+        }
+      
+        private async Task<DialogTurnResult> MainMenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["mainMenu"] = ((FoundChoice)stepContext.Result).Value;
+            // Get the current profile object from user state.
+            var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+
+            //Save all data in the user profile.
+            userProfile.Name = (string)stepContext.Values["name"];
+
+            if (stepContext.Values["language"] == "Kiswahili")
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+               new PromptOptions
+               {
+                   Prompt = MessageFactory.Text($"Habari za asubuhi {userProfile.Name}, karibu tena, tafadhali chagua kwa menu uliopewa"),
+                   Choices = ChoiceFactory.ToChoices(new List<string> { "INFORMATION", "NEWS", "REFERRAL", "SURVEY", "UPDATE PROFILE", "SHARE" }),
+               }, cancellationToken);
+
+            }
+            else
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                 new PromptOptions
+                 {
+                 Prompt = MessageFactory.Text("Good morning (userProfile.Name) Welcome back. Please choose from the main menu"),
+                 Choices = ChoiceFactory.ToChoices(new List<string> { "INFORMATION", "NEWS", "REFERRAL", "SURVEY", "UPDATE PROFILE", "SHARE" }),
+                 }, cancellationToken);
+            }
+
+             
         }
 
-        //Validators
-        //private Task<bool> CountyValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
-        //{
-        //    //promptContext has the user's input
-        //    var valid = false;
 
-        //    //If county == content in JSON FILE then accepts
+        private async Task<DialogTurnResult> SubMenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["mainMenu"] = ((FoundChoice)stepContext.Result).Value;
+            // Get the current profile object from user state.
+            var userProfile = await _userProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-        //    //else retry prompt
+            //Save all data in the user profile.
+            userProfile.Name = (string)stepContext.Values["name"];
 
-        //    if (promptContext.Recognized.Succeeded)
-        //    {
-        //        string county = promptContext.Recognized.Value;  //Get the value that the user entered.
-        //        if (county == County.Name)
-        //        {
-        //            valid = true;
-        //        }
-        //    }
-        //    return Task.FromResult(valid);
-        //}
+            if (stepContext.Values["language"] == "Kiswahili")
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+               new PromptOptions
+               {
+                   Prompt = MessageFactory.Text("Tafadhali chagua kutoka kwa sab-menu uliopewa"),
+                   Choices = ChoiceFactory.ToChoices(new List<string> { "LATEST LEGAL NEWS" }),
+               }, cancellationToken);
+
+            }
+            else
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                 new PromptOptions
+                 {
+                     Prompt = MessageFactory.Text("Please choose from the sub-menu"),
+                     Choices = ChoiceFactory.ToChoices(new List<string> { "LATEST LEGAL NEWS" }),
+                 }, cancellationToken);
+            }
+
+
+        }
+
     }
 }
 
