@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj": {}
+    "C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\MultiTurnPromptBot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj": {
+    "C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\MultiTurnPromptBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
+        "projectUniqueName": "C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\MultiTurnPromptBot.csproj",
         "projectName": "MultiTurnPromptBot",
-        "projectPath": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\MultiTurnPromptBot.csproj",
-        "packagesPath": "C:\\Users\\Tech Jargon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Tech Jargon\\Desktop\\05.multi-turn-prompt\\obj\\",
+        "projectPath": "C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\MultiTurnPromptBot.csproj",
+        "packagesPath": "C:\\Users\\ivy\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Tech Jargon\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ivy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -61,6 +61,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[3.1.2, 3.1.2]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -69,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
         }
       }
     }

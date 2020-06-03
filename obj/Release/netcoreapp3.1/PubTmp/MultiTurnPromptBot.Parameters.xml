@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <parameters>
+<<<<<<< HEAD
   <parameter name="IIS Web Application Name" description="" value="MultiTurnPromptBot20200527091745" tags="IisApp">
     <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\obj\\Release\\netcoreapp3\.1\\PubTmp\\Out\\$" />
+=======
+  <parameter name="IIS Web Application Name" description="" value="legalbot-ivy-beryl" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\Tech\ Jargon\\Desktop\\05\.multi-turn-prompt\\obj\\Release\\netcoreapp3\.1\\PubTmp\\Out\\$" />
+>>>>>>> 73058d19969cc48e2ebaf31b2b7cf01c3e8e6826
   </parameter>
 </parameters>

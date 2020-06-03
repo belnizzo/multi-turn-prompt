@@ -1,8 +1,13 @@
 {
   "runtimeOptions": {
     "additionalProbingPaths": [
+<<<<<<< HEAD
       "C:\\Users\\ivy\\.dotnet\\store\\|arch|\\|tfm|",
       "C:\\Users\\ivy\\.nuget\\packages"
+=======
+      "C:\\Users\\Tech Jargon\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\Tech Jargon\\.nuget\\packages"
+>>>>>>> 73058d19969cc48e2ebaf31b2b7cf01c3e8e6826
     ]
   }
 }

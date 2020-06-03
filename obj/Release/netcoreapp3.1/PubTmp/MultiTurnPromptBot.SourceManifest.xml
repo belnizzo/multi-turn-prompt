@@ -1,4 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <sitemanifest>
+<<<<<<< HEAD
   <IisApp path="C:\Users\ivy\Desktop\multi-turn-prompt\obj\Release\netcoreapp3.1\PubTmp\Out\" />
+=======
+  <IisApp path="C:\Users\Tech Jargon\Desktop\05.multi-turn-prompt\obj\Release\netcoreapp3.1\PubTmp\Out\" />
+>>>>>>> 73058d19969cc48e2ebaf31b2b7cf01c3e8e6826
 </sitemanifest>
