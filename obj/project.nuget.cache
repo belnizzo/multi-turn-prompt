@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "XMHqghWlDBBebC/yRunHJWO/SK7apSuLdo/1LV19aSIB9Db3LonujYu9/g6aI+AK5at1EGsPb5ZAxUQIUCWO/w==",
+  "dgSpecHash": "nk7gaSgU7VIW8TW/YwGgL0HH6Z7Ivy7mphL0X30nVTWkS8YmXaOl+mR8ubkbsy4P1M3hWdF55jIy6QUitkv34g==",
   "success": true,
   "projectFilePath": "C:\\Users\\ivy\\Desktop\\multi-turn-prompt\\MultiTurnPromptBot.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\ivy\\.nuget\\packages\\adaptivecards\\1.2.4\\adaptivecards.1.2.4.nupkg.sha512",
     "C:\\Users\\ivy\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.1\\microsoft.aspnetcore.jsonpatch.3.1.1.nupkg.sha512",
     "C:\\Users\\ivy\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.1\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.1.nupkg.sha512",
     "C:\\Users\\ivy\\.nuget\\packages\\microsoft.bot.builder\\4.9.0\\microsoft.bot.builder.4.9.0.nupkg.sha512",

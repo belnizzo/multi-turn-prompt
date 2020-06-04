@@ -15,6 +15,8 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.NumberWithUnit;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using AdaptiveCards;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -64,6 +66,7 @@ namespace Microsoft.BotBuilderSamples
                 SummaryStepAsync,
                 MainMenuStepAsync,
                 SubMenuStepAsync,
+                ChooseActionAsync,
             };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
@@ -277,7 +280,7 @@ namespace Microsoft.BotBuilderSamples
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                  new PromptOptions
                  {
-                 Prompt = MessageFactory.Text("Good morning (userProfile.Name) Welcome back. Please choose from the main menu"),
+                 Prompt = MessageFactory.Text($"Good morning {userProfile.Name} Welcome back. Please choose from the main menu"),
                  Choices = ChoiceFactory.ToChoices(new List<string> { "INFORMATION", "NEWS", "REFERRAL", "SURVEY", "UPDATE PROFILE", "SHARE" }),
                  }, cancellationToken);
             }
@@ -317,6 +320,70 @@ namespace Microsoft.BotBuilderSamples
 
 
         }
+
+
+        private async Task<DialogTurnResult> ChooseActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values["subMenu"] = ((FoundChoice)stepContext.Result).Value;
+
+            if ((string)stepContext.Values["subMenu"] == "LATEST LEGAL NEWS")
+            {
+                //define choices
+                var choices = new[] { "Links to legal news", "Go back" };
+
+                // Create card
+                var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+                {
+                    // Use LINQ to turn the choices into submit actions
+                    Actions = choices.Select(choice => new AdaptiveSubmitAction
+                    {
+                        Title = choice,
+                        Data = "https://news.microsoft.com/exec/brad-smith/ot", // This will be a string
+
+                    }).ToList<AdaptiveAction>(),
+
+                };
+
+                card.Body.Add(new AdaptiveTextBlock() { Text = "Good Evening" });
+
+
+
+                var promptOptions = new PromptOptions
+                {
+                    Prompt = (Activity)MessageFactory.Attachment(new Attachment
+                    {
+
+
+                        ContentType = AdaptiveCard.ContentType,
+                        // Content=card,
+                        Content = JObject.FromObject(card),
+
+                    }),
+
+                    Choices = ChoiceFactory.ToChoices(choices),
+                    Style = ListStyle.None,
+                };
+                return await stepContext.PromptAsync(nameof(ChoicePrompt), promptOptions, cancellationToken);
+                //return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                //return await stepContext.PromptAsync($"{nameof(UserProfileDialog)}.chooseAction", promptOptions, cancellationToken);
+            }
+            else
+            {
+                var promptOptions = new PromptOptions
+                {
+                    Prompt = MessageFactory.Text(" Go back")
+                };
+                // return await stepContext.PromptAsync(nameof(ChoicePrompt), promptOptions, cancellationToken);
+                return await stepContext.PromptAsync($"{nameof(UserProfileDialog)}.chooseAction", promptOptions, cancellationToken);
+
+            }
+
+
+
+
+        }
+
+
 
     }
 }

@@ -31,6 +31,8 @@ namespace Microsoft.BotBuilderSamples
 
             // The Dialog that will be run by the bot.
             services.AddSingleton<UserProfileDialog>();
+            // The Dialog that will be run by the bot.
+            services.AddSingleton<MainMenuDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, DialogBot<UserProfileDialog>>();

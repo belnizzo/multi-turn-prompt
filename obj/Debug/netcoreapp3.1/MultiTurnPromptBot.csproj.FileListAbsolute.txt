@@ -143,9 +143,6 @@ C:\Users\ivy\Desktop\multi-turn-prompt\bin\Debug\netcoreapp3.1\System.IdentityMo
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.csprojAssemblyReference.cache
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.AssemblyInfoInputs.cache
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.AssemblyInfo.cs
-C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.csproj.CoreCompileInputs.cache
-C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.RazorTargetAssemblyInfo.cache
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.csproj.CopyComplete
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\staticwebassets\MultiTurnPromptBot.StaticWebAssets.Manifest.cache
@@ -153,3 +150,7 @@ C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\staticwebassets\M
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.dll
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.pdb
 C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.genruntimeconfig.cache
+C:\Users\ivy\Desktop\multi-turn-prompt\bin\Debug\netcoreapp3.1\AdaptiveCards.dll
+C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.csproj.CoreCompileInputs.cache
+C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\ivy\Desktop\multi-turn-prompt\obj\Debug\netcoreapp3.1\MultiTurnPromptBot.MvcApplicationPartsAssemblyInfo.cache
